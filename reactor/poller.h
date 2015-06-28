@@ -25,7 +25,7 @@ void jor_poller_free(jor_poller_t *poller);
 
 
 int jor_poller_register(jor_poller_t *poller,
-    int fd, int event, jor_handler_func_t func);
+    int fd, uint32_t event, jor_handler_func_t func);
 
 
 int jor_poller_poll(jor_poller_t *poller, int timeout);

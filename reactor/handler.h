@@ -34,5 +34,12 @@ typedef struct jor_handler_s {
 
 } jor_handler_t;
 
+
+jor_handler_t *jor_handler_alloc(int fd, uint32_t event, void *ctx);
+
+
+void jor_handler_free(jor_handler_t *handler);
+
+
 #endif
 
