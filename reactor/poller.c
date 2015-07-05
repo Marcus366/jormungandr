@@ -1,9 +1,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "alloc.h"
 #include "rbtree.h"
 #include "poller.h"
-#include "alloc.h"
+
+
+static void jr__poller_update(jr_poller_t*, jr_handler_t*, int);
 
 
 jr_poller_t*
@@ -49,38 +52,52 @@ jr_poller_free(jr_poller_t *poller)
 
 
 int
-jr_poller_register(jr_poller_t *poller,
-    int fd, int event, jr_handler_func_t func, void *arg)
+jr_poller_ctl(jr_poller_t *poller,
+    int fd, int32_t event, jr_handler_func_t func, void *ctx);
 {
-  int found = 0;
-  jr_rbtree_node_t *p = poller->fdset->root;
+  int i;
 
-  while (p != poller->fdset->sentinel) {
-    if (fd < p->key) {
-      p = p->left;
-    } else if (fd > p->key) {
-      p = p->right;
+  for (i = 0; i < len; ++i) {
+    int found = 0;
+    jr_poller_ctl_t *ctl = pollctl_array + len;
+    jr_rbtree_node_t *p = poller->fdset->root;
+
+    while (p != poller->fdset->sentinel) {
+      if (fd < p->key) {
+        p = p->left;
+      } else if (fd > p->key) {
+        p = p->right;
+      } else {
+        found = 1;
+        break;
+      }
+    }
+
+    if (found) {
+      jr_handler_t *handler = container_of(p, jr_handler_t, rbnode);
+      if (event == 0) {
+        // Del the event
+        jr_rbtree_delete(&poller->fdset, handler->rbnode);
+        jr_handler_free(handler);
+
+        jr__poller_update(poller, handler, EPOLL_CTL_DEL);
+      } else if (handler->event != event) {
+        // Mod the event
+        handler->event = event;
+        handler->callback = func;
+
+        jr__poller_update(poller, handler, EPOLL_CTL_MOD);
+      }
     } else {
-      found = 1;
-      break;
-    }
-  }
+      // Add the event
+      jr_handler_t *handler = jr_handler_alloc(fd, event, ctx);
+      handler->callback = func;
+      jr_rbtree_insert(poller->fdset, &handler->rbnode);
 
-  if (found) {
-    //TODO replace
-  } else {
-    jr_handler_t *handler = jr_handler_alloc(fd, event, ctx);
-    if (event & M_READ) {
-      handler->vtable->handle_read = func;
-    }
-    if (event & M_WRITE) {
-      handler->vtable->handle_write = func;
+      jr__poller_update(poller, handler, EPOLL_CTL_MOD);
     }
 
-    jr_rbtree_insert(poller->fdset, &handler->rbnode);
   }
-  
-  //TODO epoll ctl
 
   return 0;
 }
@@ -97,14 +114,26 @@ int jr_poller_poll(jr_poller_t *poller, int timeout)
   }
 
   for (i = 0; i < nfds; ++i) {
+    int event = 0;
     struct epoll_event ev = poller->events[i];
     jr_handler_t *handler = (jr_handler_t*)ev.data.ptr;
-    if (ev.events & EPOLLIN) {
-      handler->vtable->handle_read(handler->fd, 0, handler->ctx);
-    }
-    if (ev.events & EPOLLOUT) {
-      handler->vtable->handle_write(handler->fd, 0, handler->ctx);
-    }
+    if (ev.events & EPOLLIN) event |= POLL_READ;
+    if (ev.events & EPOLLOUT) event |= POLL_WRITE;
+
+    handler->callback(handler->fd, event, handler->ctx);
   }
 }
 
+
+static void
+jr__poller_update(jr_poller_t *poller,
+    jr_handler_t *handler, int op)
+{
+  struct epoll_event event;
+  event.events = handler->event;
+  event.data.ptr = handler;
+
+  if (epoll_ctl(poller->epfd, op, handler->fd, &event) == -1) {
+    abort();
+  }
+}

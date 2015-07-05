@@ -18,14 +18,21 @@ typedef struct jr_poller_s {
 } jr_poller_t;
 
 
+typedef struct jr_poller_ctl_s {
+  int fd;
+  uint32_t event;
+  jr_handler_func_t func;
+} jr_poller_ctl_t;
+
+
 jr_poller_t* jr_poller_alloc(int nevents);
 
 
 void jr_poller_free(jr_poller_t *poller);
 
 
-int jr_poller_register(jr_poller_t *poller,
-    int fd, uint32_t event, jr_handler_func_t func);
+int jr_poller_ctl(jr_poller_t *poller,
+    int fd, int32_t event, jr_handler_func_t func, void *ctx);
 
 
 int jr_poller_poll(jr_poller_t *poller, int timeout);

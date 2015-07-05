@@ -6,29 +6,22 @@
 #include "rbtree.h"
 
 
-#define M_READ (1 << 0)
-#define M_WRITE (1 << 1)
-#define M_EXCEPT (1 << 2)
-#define M_ACCEPT (1 << 3)
-#define M_CONNECT (1 << 4)
+#define POLL_READ (1 << 0)
+#define POLL_WRITE (1 << 1)
+#define POLL_EXCEPT (1 << 2)
+#define POLL_ACCEPT (1 << 3)
+#define POLL_CONNECT (1 << 4)
 
 
-typedef int (*jr_handler_func_t)(int, int, void*);
+typedef int (*jr_handler_func_t)(int, int32_t, void*);
 
-typedef struct jr_handler_vf_s {
-  jr_handler_func_t handle_read;
-  jr_handler_func_t handle_write;
-  jr_handler_func_t handle_close;
-
-  jr_handler_func_t handle_expection;
-} jr_handler_vf_t;
 
 typedef struct jr_handler_s {
-  jr_handler_vf_t vtable;
+  jr_handler_func_t callback;
   jr_rbtree_node_t rbnode;
 
   int fd;
-  uint32_t mask;
+  uint32_t event;
 
   void *ctx;
 
