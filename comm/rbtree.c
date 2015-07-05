@@ -40,27 +40,27 @@
 #include "rbtree.h"
 
 
-static inline void jor_rbtree_left_rotate(jor_rbtree_node_t **root,
-    jor_rbtree_node_t *sentinel, jor_rbtree_node_t *node);
-static inline void jor_rbtree_right_rotate(jor_rbtree_node_t **root,
-    jor_rbtree_node_t *sentinel, jor_rbtree_node_t *node);
+static inline void jr_rbtree_left_rotate(jr_rbtree_node_t **root,
+    jr_rbtree_node_t *sentinel, jr_rbtree_node_t *node);
+static inline void jr_rbtree_right_rotate(jr_rbtree_node_t **root,
+    jr_rbtree_node_t *sentinel, jr_rbtree_node_t *node);
 
 
 void
-jor_rbtree_insert(jor_rbtree_t *tree, jor_rbtree_node_t *node)
+jr_rbtree_insert(jr_rbtree_t *tree, jr_rbtree_node_t *node)
 {
-  jor_rbtree_node_t  **root, *temp, *sentinel;
+  jr_rbtree_node_t  **root, *temp, *sentinel;
 
   /* a binary tree insert */
 
-  root = (jor_rbtree_node_t **) &tree->root;
+  root = (jr_rbtree_node_t **) &tree->root;
   sentinel = tree->sentinel;
 
   if (*root == sentinel) {
     node->parent = NULL;
     node->left = sentinel;
     node->right = sentinel;
-    jor_rbt_black(node);
+    jr_rbt_black(node);
     *root = node;
 
     return;
@@ -70,59 +70,59 @@ jor_rbtree_insert(jor_rbtree_t *tree, jor_rbtree_node_t *node)
 
   /* re-balance tree */
 
-  while (node != *root && jor_rbt_is_red(node->parent)) {
+  while (node != *root && jr_rbt_is_red(node->parent)) {
 
     if (node->parent == node->parent->parent->left) {
       temp = node->parent->parent->right;
 
-      if (jor_rbt_is_red(temp)) {
-        jor_rbt_black(node->parent);
-        jor_rbt_black(temp);
-        jor_rbt_red(node->parent->parent);
+      if (jr_rbt_is_red(temp)) {
+        jr_rbt_black(node->parent);
+        jr_rbt_black(temp);
+        jr_rbt_red(node->parent->parent);
         node = node->parent->parent;
 
       } else {
         if (node == node->parent->right) {
           node = node->parent;
-          jor_rbtree_left_rotate(root, sentinel, node);
+          jr_rbtree_left_rotate(root, sentinel, node);
         }
 
-        jor_rbt_black(node->parent);
-        jor_rbt_red(node->parent->parent);
-        jor_rbtree_right_rotate(root, sentinel, node->parent->parent);
+        jr_rbt_black(node->parent);
+        jr_rbt_red(node->parent->parent);
+        jr_rbtree_right_rotate(root, sentinel, node->parent->parent);
       }
 
     } else {
       temp = node->parent->parent->left;
 
-      if (jor_rbt_is_red(temp)) {
-        jor_rbt_black(node->parent);
-        jor_rbt_black(temp);
-        jor_rbt_red(node->parent->parent);
+      if (jr_rbt_is_red(temp)) {
+        jr_rbt_black(node->parent);
+        jr_rbt_black(temp);
+        jr_rbt_red(node->parent->parent);
         node = node->parent->parent;
 
       } else {
         if (node == node->parent->left) {
           node = node->parent;
-          jor_rbtree_right_rotate(root, sentinel, node);
+          jr_rbtree_right_rotate(root, sentinel, node);
         }
 
-        jor_rbt_black(node->parent);
-        jor_rbt_red(node->parent->parent);
-        jor_rbtree_left_rotate(root, sentinel, node->parent->parent);
+        jr_rbt_black(node->parent);
+        jr_rbt_red(node->parent->parent);
+        jr_rbtree_left_rotate(root, sentinel, node->parent->parent);
       }
     }
   }
 
-  jor_rbt_black(*root);
+  jr_rbt_black(*root);
 }
 
 
 void
-jor_rbtree_insert_value(jor_rbtree_node_t *temp, jor_rbtree_node_t *node,
-    jor_rbtree_node_t *sentinel)
+jr_rbtree_insert_value(jr_rbtree_node_t *temp, jr_rbtree_node_t *node,
+    jr_rbtree_node_t *sentinel)
 {
-  jor_rbtree_node_t  **p;
+  jr_rbtree_node_t  **p;
 
   for ( ;; ) {
 
@@ -139,15 +139,15 @@ jor_rbtree_insert_value(jor_rbtree_node_t *temp, jor_rbtree_node_t *node,
   node->parent = temp;
   node->left = sentinel;
   node->right = sentinel;
-  jor_rbt_red(node);
+  jr_rbt_red(node);
 }
 
 
 void
-jor_rbtree_insert_timer_value(jor_rbtree_node_t *temp, jor_rbtree_node_t *node,
-    jor_rbtree_node_t *sentinel)
+jr_rbtree_insert_timer_value(jr_rbtree_node_t *temp, jr_rbtree_node_t *node,
+    jr_rbtree_node_t *sentinel)
 {
-  jor_rbtree_node_t  **p;
+  jr_rbtree_node_t  **p;
 
   for ( ;; ) {
 
@@ -174,19 +174,19 @@ jor_rbtree_insert_timer_value(jor_rbtree_node_t *temp, jor_rbtree_node_t *node,
   node->parent = temp;
   node->left = sentinel;
   node->right = sentinel;
-  jor_rbt_red(node);
+  jr_rbt_red(node);
 }
 
 
 void
-jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
+jr_rbtree_delete(jr_rbtree_t *tree, jr_rbtree_node_t *node)
 {
   uint32_t             red;
-  jor_rbtree_node_t  **root, *sentinel, *subst, *temp, *w;
+  jr_rbtree_node_t  **root, *sentinel, *subst, *temp, *w;
 
   /* a binary tree delete */
 
-  root = (jor_rbtree_node_t **) &tree->root;
+  root = (jr_rbtree_node_t **) &tree->root;
   sentinel = tree->sentinel;
 
   if (node->left == sentinel) {
@@ -198,7 +198,7 @@ jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
     subst = node;
 
   } else {
-    subst = jor_rbtree_min(node->right, sentinel);
+    subst = jr_rbtree_min(node->right, sentinel);
 
     if (subst->left != sentinel) {
       temp = subst->left;
@@ -209,7 +209,7 @@ jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
 
   if (subst == *root) {
     *root = temp;
-    jor_rbt_black(temp);
+    jr_rbt_black(temp);
 
     /* DEBUG stuff */
     node->left = NULL;
@@ -220,7 +220,7 @@ jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
     return;
   }
 
-  red = jor_rbt_is_red(subst);
+  red = jr_rbt_is_red(subst);
 
   if (subst == subst->parent->left) {
     subst->parent->left = temp;
@@ -245,7 +245,7 @@ jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
     subst->left = node->left;
     subst->right = node->right;
     subst->parent = node->parent;
-    jor_rbt_copy_color(subst, node);
+    jr_rbt_copy_color(subst, node);
 
     if (node == *root) {
       *root = subst;
@@ -279,77 +279,77 @@ jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node)
 
   /* a delete fixup */
 
-  while (temp != *root && jor_rbt_is_black(temp)) {
+  while (temp != *root && jr_rbt_is_black(temp)) {
 
     if (temp == temp->parent->left) {
       w = temp->parent->right;
 
-      if (jor_rbt_is_red(w)) {
-        jor_rbt_black(w);
-        jor_rbt_red(temp->parent);
-        jor_rbtree_left_rotate(root, sentinel, temp->parent);
+      if (jr_rbt_is_red(w)) {
+        jr_rbt_black(w);
+        jr_rbt_red(temp->parent);
+        jr_rbtree_left_rotate(root, sentinel, temp->parent);
         w = temp->parent->right;
       }
 
-      if (jor_rbt_is_black(w->left) && jor_rbt_is_black(w->right)) {
-        jor_rbt_red(w);
+      if (jr_rbt_is_black(w->left) && jr_rbt_is_black(w->right)) {
+        jr_rbt_red(w);
         temp = temp->parent;
 
       } else {
-        if (jor_rbt_is_black(w->right)) {
-          jor_rbt_black(w->left);
-          jor_rbt_red(w);
-          jor_rbtree_right_rotate(root, sentinel, w);
+        if (jr_rbt_is_black(w->right)) {
+          jr_rbt_black(w->left);
+          jr_rbt_red(w);
+          jr_rbtree_right_rotate(root, sentinel, w);
           w = temp->parent->right;
         }
 
-        jor_rbt_copy_color(w, temp->parent);
-        jor_rbt_black(temp->parent);
-        jor_rbt_black(w->right);
-        jor_rbtree_left_rotate(root, sentinel, temp->parent);
+        jr_rbt_copy_color(w, temp->parent);
+        jr_rbt_black(temp->parent);
+        jr_rbt_black(w->right);
+        jr_rbtree_left_rotate(root, sentinel, temp->parent);
         temp = *root;
       }
 
     } else {
       w = temp->parent->left;
 
-      if (jor_rbt_is_red(w)) {
-        jor_rbt_black(w);
-        jor_rbt_red(temp->parent);
-        jor_rbtree_right_rotate(root, sentinel, temp->parent);
+      if (jr_rbt_is_red(w)) {
+        jr_rbt_black(w);
+        jr_rbt_red(temp->parent);
+        jr_rbtree_right_rotate(root, sentinel, temp->parent);
         w = temp->parent->left;
       }
 
-      if (jor_rbt_is_black(w->left) && jor_rbt_is_black(w->right)) {
-        jor_rbt_red(w);
+      if (jr_rbt_is_black(w->left) && jr_rbt_is_black(w->right)) {
+        jr_rbt_red(w);
         temp = temp->parent;
 
       } else {
-        if (jor_rbt_is_black(w->left)) {
-          jor_rbt_black(w->right);
-          jor_rbt_red(w);
-          jor_rbtree_left_rotate(root, sentinel, w);
+        if (jr_rbt_is_black(w->left)) {
+          jr_rbt_black(w->right);
+          jr_rbt_red(w);
+          jr_rbtree_left_rotate(root, sentinel, w);
           w = temp->parent->left;
         }
 
-        jor_rbt_copy_color(w, temp->parent);
-        jor_rbt_black(temp->parent);
-        jor_rbt_black(w->left);
-        jor_rbtree_right_rotate(root, sentinel, temp->parent);
+        jr_rbt_copy_color(w, temp->parent);
+        jr_rbt_black(temp->parent);
+        jr_rbt_black(w->left);
+        jr_rbtree_right_rotate(root, sentinel, temp->parent);
         temp = *root;
       }
     }
   }
 
-  jor_rbt_black(temp);
+  jr_rbt_black(temp);
 }
 
 
 static inline void
-jor_rbtree_left_rotate(jor_rbtree_node_t **root, jor_rbtree_node_t *sentinel,
-    jor_rbtree_node_t *node)
+jr_rbtree_left_rotate(jr_rbtree_node_t **root, jr_rbtree_node_t *sentinel,
+    jr_rbtree_node_t *node)
 {
-  jor_rbtree_node_t  *temp;
+  jr_rbtree_node_t  *temp;
 
   temp = node->right;
   node->right = temp->left;
@@ -376,10 +376,10 @@ jor_rbtree_left_rotate(jor_rbtree_node_t **root, jor_rbtree_node_t *sentinel,
 
 
 static inline void
-jor_rbtree_right_rotate(jor_rbtree_node_t **root, jor_rbtree_node_t *sentinel,
-    jor_rbtree_node_t *node)
+jr_rbtree_right_rotate(jr_rbtree_node_t **root, jr_rbtree_node_t *sentinel,
+    jr_rbtree_node_t *node)
 {
-  jor_rbtree_node_t  *temp;
+  jr_rbtree_node_t  *temp;
 
   temp = node->left;
   node->left = temp->right;

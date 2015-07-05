@@ -5,7 +5,7 @@
 #include "socket.h"
 
 int
-jor_ipaddr_init(struct sockaddr_in *addr,
+jr_ipaddr_init(struct sockaddr_in *addr,
     const char *ip, unsigned short port)
 {
   bzero(addr, sizeof(struct sockaddr_in));
@@ -18,7 +18,7 @@ jor_ipaddr_init(struct sockaddr_in *addr,
 
 
 int
-jor_tcp_open(struct sockaddr_in *addr)
+jr_tcp_open(struct sockaddr_in *addr)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd == -1) {
@@ -38,21 +38,21 @@ jor_tcp_open(struct sockaddr_in *addr)
 
 
 int
-jor_tcp_listen(int fd, int backlog)
+jr_tcp_listen(int fd, int backlog)
 {
   return listen(fd, backlog);
 }
 
 
 int
-jor_tcp_connect(int fd, struct sockaddr_in *addr)
+jr_tcp_connect(int fd, struct sockaddr_in *addr)
 {
   return connect(fd, (struct sockaddr*)addr, sizeof(struct sockaddr_in));
 }
 
 
 int
-jor_tcp_accept(int fd, struct sockaddr_in *addr)
+jr_tcp_accept(int fd, struct sockaddr_in *addr)
 {
   bzero(addr, sizeof(struct sockaddr_in));
   socklen_t len = sizeof(struct sockaddr_in);
@@ -62,7 +62,7 @@ jor_tcp_accept(int fd, struct sockaddr_in *addr)
 
 
 int
-jor_tcp_close(int fd)
+jr_tcp_close(int fd)
 {
   return close(fd);
 }

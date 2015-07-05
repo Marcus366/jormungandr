@@ -1,9 +1,9 @@
 #include "closure.h"
 
-jor_closure_t
-jor_make_closure(jor_closure_func_t func, void *data)
+jr_closure_t
+jr_make_closure(jr_closure_func_t func, void *data)
 {
-  jor_closure_t closure = {
+  jr_closure_t closure = {
     .func = func,
     .data = data
   };
@@ -12,7 +12,7 @@ jor_make_closure(jor_closure_func_t func, void *data)
 }
 
 int
-jor_closure_run(jor_closure_t closure)
+jr_closure_run(jr_closure_t closure)
 {
   return closure.func(closure.data);
 }

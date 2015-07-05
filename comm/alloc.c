@@ -3,7 +3,7 @@
 
 
 void*
-jor_malloc(size_t size)
+jr_malloc(size_t size)
 {
   void *p = malloc(size);
 
@@ -16,7 +16,7 @@ jor_malloc(size_t size)
 
 
 void
-jor_free(void *p)
+jr_free(void *p)
 {
   free(p);
 }

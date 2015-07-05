@@ -5,10 +5,10 @@
 #include <stddef.h>
 
 
-void* jor_malloc(size_t size);
+void* jr_malloc(size_t size);
 
 
-void jor_free(void *p);
+void jr_free(void *p);
 
 
 #endif

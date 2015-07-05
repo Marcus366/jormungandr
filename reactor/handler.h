@@ -13,32 +13,32 @@
 #define M_CONNECT (1 << 4)
 
 
-typedef int (*jor_handler_func_t)(int, int, void*);
+typedef int (*jr_handler_func_t)(int, int, void*);
 
-typedef struct jor_handler_vf_s {
-  jor_handler_func_t handle_read;
-  jor_handler_func_t handle_write;
-  jor_handler_func_t handle_close;
+typedef struct jr_handler_vf_s {
+  jr_handler_func_t handle_read;
+  jr_handler_func_t handle_write;
+  jr_handler_func_t handle_close;
 
-  jor_handler_func_t handle_expection;
-} jor_handler_vf_t;
+  jr_handler_func_t handle_expection;
+} jr_handler_vf_t;
 
-typedef struct jor_handler_s {
-  jor_handler_vf_t vtable;
-  jor_rbtree_node_t rbnode;
+typedef struct jr_handler_s {
+  jr_handler_vf_t vtable;
+  jr_rbtree_node_t rbnode;
 
   int fd;
   uint32_t mask;
 
   void *ctx;
 
-} jor_handler_t;
+} jr_handler_t;
 
 
-jor_handler_t *jor_handler_alloc(int fd, uint32_t event, void *ctx);
+jr_handler_t *jr_handler_alloc(int fd, uint32_t event, void *ctx);
 
 
-void jor_handler_free(jor_handler_t *handler);
+void jr_handler_free(jr_handler_t *handler);
 
 
 #endif

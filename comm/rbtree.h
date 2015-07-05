@@ -41,54 +41,54 @@
         (type *)( (char *)__mptr - offsetof(type,member) );})
 
 
-typedef struct jor_rbtree_node_s  jor_rbtree_node_t;
-struct jor_rbtree_node_s {
+typedef struct jr_rbtree_node_s  jr_rbtree_node_t;
+struct jr_rbtree_node_s {
   uint32_t key;
-  jor_rbtree_node_t *left;
-  jor_rbtree_node_t *right;
-  jor_rbtree_node_t *parent;
+  jr_rbtree_node_t *left;
+  jr_rbtree_node_t *right;
+  jr_rbtree_node_t *parent;
   char color;
 };
 
 
-typedef struct jor_rbtree_s  jor_rbtree_t;
+typedef struct jr_rbtree_s  jr_rbtree_t;
 
-typedef void (*jor_rbtree_insert_pt) (jor_rbtree_node_t *root,
-    jor_rbtree_node_t *node, jor_rbtree_node_t *sentinel);
+typedef void (*jr_rbtree_insert_pt) (jr_rbtree_node_t *root,
+    jr_rbtree_node_t *node, jr_rbtree_node_t *sentinel);
 
-struct jor_rbtree_s {
-  jor_rbtree_node_t *root;
-  jor_rbtree_node_t *sentinel;
-  jor_rbtree_insert_pt insert;
+struct jr_rbtree_s {
+  jr_rbtree_node_t *root;
+  jr_rbtree_node_t *sentinel;
+  jr_rbtree_insert_pt insert;
 };
 
-#define jor_rbtree_init(tree, s, i)                                         \
-  jor_rbtree_sentinel_init(s);                                              \
+#define jr_rbtree_init(tree, s, i)                                         \
+  jr_rbtree_sentinel_init(s);                                              \
   (tree)->root = s;                                                         \
   (tree)->sentinel = s;                                                     \
   (tree)->insert = i
 
 
-void jor_rbtree_insert(jor_rbtree_t *tree, jor_rbtree_node_t *node);
-void jor_rbtree_delete(jor_rbtree_t *tree, jor_rbtree_node_t *node);
-void jor_rbtree_insert_value(jor_rbtree_node_t *root, jor_rbtree_node_t *node,
-    jor_rbtree_node_t *sentinel);
-void jor_rbtree_insert_timer_value(jor_rbtree_node_t *root,
-    jor_rbtree_node_t *node, jor_rbtree_node_t *sentinel);
+void jr_rbtree_insert(jr_rbtree_t *tree, jr_rbtree_node_t *node);
+void jr_rbtree_delete(jr_rbtree_t *tree, jr_rbtree_node_t *node);
+void jr_rbtree_insert_value(jr_rbtree_node_t *root, jr_rbtree_node_t *node,
+    jr_rbtree_node_t *sentinel);
+void jr_rbtree_insert_timer_value(jr_rbtree_node_t *root,
+    jr_rbtree_node_t *node, jr_rbtree_node_t *sentinel);
 
 
-#define jor_rbt_red(node)               ((node)->color = 1)
-#define jor_rbt_black(node)             ((node)->color = 0)
-#define jor_rbt_is_red(node)            ((node)->color)
-#define jor_rbt_is_black(node)          (!jor_rbt_is_red(node))
-#define jor_rbt_copy_color(n1, n2)      (n1->color = n2->color)
+#define jr_rbt_red(node)               ((node)->color = 1)
+#define jr_rbt_black(node)             ((node)->color = 0)
+#define jr_rbt_is_red(node)            ((node)->color)
+#define jr_rbt_is_black(node)          (!jr_rbt_is_red(node))
+#define jr_rbt_copy_color(n1, n2)      (n1->color = n2->color)
 
 
-#define jor_rbtree_sentinel_init(node)  jor_rbt_black(node)
+#define jr_rbtree_sentinel_init(node)  jr_rbt_black(node)
 
 
-static inline jor_rbtree_node_t*
-jor_rbtree_min(jor_rbtree_node_t *node, jor_rbtree_node_t *sentinel)
+static inline jr_rbtree_node_t*
+jr_rbtree_min(jr_rbtree_node_t *node, jr_rbtree_node_t *sentinel)
 {
   while (node->left != sentinel) {
     node = node->left;
